@@ -256,9 +256,9 @@ void add_student(){
     printf("Отчество > ");           gets(new_fname);   new_student.FIO.fname   = (char *) malloc(sizeof(new_fname)   + 1); strcpy(new_student.FIO.fname,   new_fname);
     printf("Номер группы > ");       scanf("%d", &new_student.group);
     printf("Дату рождения:\n");
-    printf("День > ");                scanf("%d", &new_student.birthdate.day);
-    printf("Месяц > ");               scanf("%d", &new_student.birthdate.month);
-    printf("Год > ");                 scanf("%d", &new_student.birthdate.year);
+    printf("День > ");               scanf("%d", &new_student.birthdate.day);
+    printf("Месяц > ");              scanf("%d", &new_student.birthdate.month);
+    printf("Год > ");                scanf("%d", &new_student.birthdate.year);
     if (current_size == max_size){
         max_size *= 2;
         students = realloc(students, max_size * sizeof(struct student));
@@ -370,15 +370,15 @@ void find_by_fname(int* found_cnt){
 void find_by_age(int* found_cnt){
     CLEAR_
     time(&rawtime);
-    timeinfo = localtime(&rawtime);
+    timeinfo = localtime(&rawtime);   // СОХРАНЯЕМ ТЕКУЩЕЕ ВРЕМЯ
     char age_buffer[20] = "buffer";
     int age_finding;
-    struct date TODAY;
+    struct date TODAY;                // СОЗДАЁМ СТРУКТУРУ ДАННЫХ ТИПА - DATE -> ЗАПИСЫВАЕМ ТЕКУЩУЮ ДАТУ
     TODAY.day = timeinfo->tm_mday, TODAY.month = timeinfo->tm_mon, TODAY.year = timeinfo->tm_year + 1900;
     printf("Сегодня > %d:%d:%d\n", TODAY.day, TODAY.month, TODAY.year);
     getchar();
 
-    while (!(atoi(age_buffer))){
+    while (!(atoi(age_buffer)) || (atoi(age_buffer) <= 0)){   // ПОКА ПОЛЬЗОВАТЕЛЬ НЕ ВВЕЛ ЧИСЛО ИЛИ ВВЕЛ ЧИСЛО <= 0
         printf("Введите возраст, старше которого будет производится поиск студентов > ");  gets(age_buffer);   CLEAR_
     }
     age_finding = atoi(age_buffer);
@@ -406,26 +406,25 @@ void find_by_age(int* found_cnt){
     if (*found_cnt != 0) SEPARATOR PAUSE_ CLEAR_
 }
 
-void search2(){
+void search(){
     int inMenu1 = 1, inMenu2 = 1;
     int found_cnt = 0, was_finding = 0;
     char Menu_Option_1 = '0', Menu_Option_2 = '0';
 
     while (inMenu1){
-        CLEAR_
-        SEPARATOR
-        printf("Choose search type:\n");
-        printf("1. FIO\n2. Age\n3. Group\n4. Back to menu\n");
+        CLEAR_  SEPARATOR
+        printf("Введите тип поиска:\n");
+        printf("1. ФИО\n2. Возраст\n3. Номер группы\n4. Вернуться в главное меню\n");
         Menu_Option_1 = getchar();
 
         switch(Menu_Option_1){
-            case '1':
+            case '1':   // ПОИСК ПО ФИО
                 inMenu2 = 1;
                 while (inMenu2){
                     CLEAR_
                     SEPARATOR
-                    printf("Specify seatch type:\n");
-                    printf("1. Surname\n2. Name\n3. Both\n4. Patronym\n5. Back to menu\n");
+                    printf("Уточните тип поиска:\n");
+                    printf("1. По фамилии\n2. По имени\n3. По фамилии и имени\n4. По отчеству\n5. На предыдущий пункт\n");
                     Menu_Option_2 = getchar();
                     
                     switch(Menu_Option_2){
@@ -451,15 +450,15 @@ void search2(){
                     }
                 }
                 break;
-            case '2':
+            case '2':   // ПОИСК ПО ВОЗРАСТУ
                 find_by_age(&found_cnt);
                 inMenu1 = 0;
                 break;
-            case '3':
+            case '3':   // ПОИСК ПО НОМЕРУ ГРУППЫ
                 find_from_group(&found_cnt);
                 inMenu1 = 0;
                 break;
-            case '4':
+            case '4':   // ВЫХОД В ГЛАВНОЕ МЕНЮ
                 inMenu1 = 0;
                 break;
             default:
@@ -498,9 +497,7 @@ int main(){
     enable_colors(); set_utf_8();
 
     int option = -1, MENU = 1;
-
     char *file_name = "DB_Lab_7.txt";
-    
 
     while (MENU){
         CLEAR_
@@ -515,7 +512,7 @@ int main(){
                 print_database();
                 break;
             case 3:     // Поиск студента по базе данных
-                search2();
+                search();
                 break;
             case 4:     // Сортировать базу данных по фамилиям студентов
                 sort_database();
