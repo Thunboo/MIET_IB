@@ -92,7 +92,7 @@ void text(int N){
         }
     }
     system("cls");
-    for (i = 1; i < amount_of_strings; i++){
+    for (i = 0; i < amount_of_strings; i++){
         printf("%s\nwords : %d | digits : %d | spaces : %d | special chars : %d\n\n", dpt[i], results[i][0], results[i][1], results[i][2], results[i][3]);
     }
     for (i = 0; i < k; i++){
@@ -101,15 +101,15 @@ void text(int N){
     }
 }
 
-double summarize_column(double **matrix, int column, int start, int end){
-    int i; double summ;
+int summarize_column(int **matrix, int column, int start, int end){
+    int i, summ;
     for (i = start, summ = 0; i < end; i++){
         summ += matrix[i][column];
     }
     return summ;
 }
-double summarize_row(double **matrix, int row, int start, int end){
-    int j; double summ;
+int summarize_row(int **matrix, int row, int start, int end){
+    int j, summ;
     for (j = start, summ = 0; j < end; j++){
         summ += matrix[row][j];
     }
@@ -118,39 +118,39 @@ double summarize_row(double **matrix, int row, int start, int end){
 void dinamic_matrixes(int n, int m){
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    double **Matrix; // Pointer to dinamic matrix
+    int **Matrix; // Pointer to dinamic matrix
     int i,j;
     int start, end;
     int flag = 0;
     // Matrix = (int **) malloc(sizeof(*Matrix) * n);
-    Matrix = (double **) malloc(sizeof(double*) * n);
+    Matrix = (int **) malloc(sizeof(int*) * n);
     for (i = 0; i < n; i++){
         // Matrix = (int *) malloc(sizeof(*Matrix[i]))
-        Matrix[i] = (double *) malloc(sizeof(double));
+        Matrix[i] = (int *) malloc(sizeof(int));
         if (i < n / 2){
             start = 0; end = m / 2;
         }
         else { start = m / 2; end = m; }
         for (j = 0; j < m; j++){
-            Matrix[i][j] = rand()%9 + rand()%99/100. - 5;
+            Matrix[i][j] = rand() % 9 + 1;
             // if ( (i < (m + 1) / 2) && (j < (n + 1) / 2) ) { color_output_green }
             // else if ( (i >= (m + 1) / 2) && (j >= (n + 1) / 2) ) { color_output_green }
             if ( (i < n / 2) && (j < m / 2) ) { color_output_green }
             else if ( (i >= n / 2) && (j >= m / 2) ) { color_output_green }
             else { color_output_white }
-            printf("%8.2f", Matrix[i][j]);
+            printf("%5d", Matrix[i][j]);
         }
         color_output_white
-        printf(" | %8.2f", summarize_row(Matrix, i, start, end));
+        printf(" | %5d", summarize_row(Matrix, i, start, end));
         printf("\n");
     }
-    for (int p = 0; p < m; p++){ printf("--------"); } printf("\n");
+    for (int p = 0; p < m; p++){ printf("-----"); } printf("\n");
     for (int column = 0; column < m; column++){ // to be done 
         if (column < m / 2){
             start = 0; end = n / 2;
         }
         else { start = n / 2; end = n; }
-        printf("%8.2f", summarize_column(Matrix, column, start, end));
+        printf("%5d", summarize_column(Matrix, column, start, end));
     }
     printf("\n\n");
     
@@ -163,7 +163,6 @@ void dinamic_matrixes(int n, int m){
 int main(){
     time_t CT; srand(time(&CT));
     int choise = 0;
-    // system("cls");
     while ( (choise != 1) && (choise != 2)) {
         printf("Pick a programm:\n1) Text analyzer\n2) Matrixes\n\n_");
         scanf("%d", &choise);
