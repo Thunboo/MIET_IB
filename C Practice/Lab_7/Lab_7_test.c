@@ -22,15 +22,15 @@ struct fio {
     };
 
 struct date {
-        int day;
-        int month;
-        int year;
+        unsigned int day;
+        unsigned int month;
+        unsigned int year;
     };
 
 struct student {
         struct fio FIO;
         struct date birthdate;
-        int group;
+        unsigned int group;
     };
 
 char * months[12] = {"Jan", "Feb", "Mar", "Apr", 
@@ -41,14 +41,14 @@ time_t rawtime;
 struct tm * timeinfo;
 
 struct student *students;
-int current_size, max_size; // SIZE_OF_DATABASE, SIZE_OF_DATABASE * 2;
+unsigned int current_size, max_size;
 
 void main_menu(){
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     MAIN_MENU_SEPARATOR
     printf("| "); color_output_blue printf("Добавить ещё одного студента ............ 1 "); color_output_white printf("|\n");
     printf("| "); color_output_blue printf("Вывести базу данных студентов ........... 2 "); color_output_white printf("|\n");
-    printf("| "); color_output_blue printf("Поиск студентов ......................... 3 "); color_output_white printf("|\n");
+    printf("| "); color_output_blue printf("Поиск студента по имени/фамилии ......... 3 "); color_output_white printf("|\n");
     printf("| "); color_output_blue printf("Сортировать БД  ......................... 4 "); color_output_white printf("|\n");
     MAIN_MENU_SEPARATOR
     printf("| "); color_output_blue printf("Сформировать случайную базу данных  ..... 5 "); color_output_white printf("|\n");
@@ -58,7 +58,7 @@ void main_menu(){
     MAIN_MENU_SEPARATOR color_output_blue printf("  Выберете опцию (введите номер)\n"); color_output_green
 }
 
-void form_database(int SIZE_FOR_DATABASE){
+void form_database(unsigned int SIZE_FOR_DATABASE){
     char Surnames_male[50][12] = {"Smirnov", "Ivanov", "Kuzneczov", "Sokolov", "Popov", "Lebedev", "Kozlov", "Novikov", "Morozov", "Petrov", "Volkov", 
                                   "Solovyov", "Vasilev", "Zaiyczev", "Pavlov", "Semyonov", "Golubev", "Vinogradov", "Bogdanov", "Vorobyov", "Fyodorov", 
                                   "Mixaiylov", "Belyaev", "Tarasov", "Belov", "Komarov", "Orlov", "Kiselyov", "Makarov", "Andreev", "Kovalyov", 
@@ -93,20 +93,20 @@ void form_database(int SIZE_FOR_DATABASE){
                               "Ilich", "Iosifovich", "Isaakovich", "Kirillovich", "Konstantinovich", "Leonidovich", "Lvovich", "Maksimovich", 
                               "Matveevich", "Mixailovich", "Nikolaevich", "Olegovich", "Pavlovich", "Palych", "Petrovich", "Platonovich", 
                               "Robertovich", "Romanovich"};
-    int id_surname, id_name, id_patr;
+    unsigned int id_surname, id_name, id_patr;
 
-    if (SIZE_FOR_DATABASE <= 3) { current_size = SIZE_OF_DATABASE; printf("Введено значение <= 3 !\nИспользовано базовое количество студенстов = 8\n"); PAUSE_} 
+    if (SIZE_FOR_DATABASE <= 3) { current_size = SIZE_OF_DATABASE; printf("Введено значение <= 3 !\nИспользовано базовое количество студенстов = 8\n"); PAUSE_} // Other way - it crashes
     else {current_size = SIZE_FOR_DATABASE; } 
     max_size = current_size * 2; 
 
-    students = (struct student*) malloc(max_size * sizeof(struct student));
+    students = (struct student *) malloc(max_size * sizeof(struct student));
 
     for (int i = 0; i < current_size; i++){
-        students[i].group = i % (current_size / 4) % 30 + 1;
-        id_surname = rand() % 50;
-        id_name = rand() % 50;
-        id_patr = rand() % 50;
-        if (rand() % 2) {
+        students[i].group = i % (current_size / 4) % 30 + 1; // Generating group number
+        id_surname = rand() % 50;                            // Generating surname
+        id_name = rand() % 50;                               // Generating name
+        id_patr = rand() % 50;                               // Generating patronym
+        if (rand() % 2) {                                    // Writing down the Surname, Name, Patronym
             students[i].FIO.surname = (char *) malloc(sizeof(Surnames_female[id_surname]) + 1);
             strcpy(students[i].FIO.surname, Surnames_female[id_surname]);
             students[i].FIO.name    = (char *) malloc(sizeof(      Names_female[id_name]) + 1);
@@ -122,11 +122,9 @@ void form_database(int SIZE_FOR_DATABASE){
             students[i].FIO.fname   = (char *) malloc(sizeof(       Patr_male[id_patr]) + 1);
             strcpy(students[i].FIO.fname, Patr_male[id_patr]);
         }
-        students[i].birthdate.year = 2024 - 18 - (rand() % 10);
-        int month = rand() % 12 + 1;
-        students[i].birthdate.month = month;
-        int day;
-        switch (month){
+        students[i].birthdate.year = 2024 - 18 - (rand() % 10); // Generating year of birth
+        students[i].birthdate.month = rand() % 12 + 1;          // Generating month of birth
+        switch (students[i].birthdate.month){                   // Generating day of birth
             case 1:  // Jan
             case 3:  // Mar
             case 5:  // May
@@ -134,23 +132,22 @@ void form_database(int SIZE_FOR_DATABASE){
             case 8:  // Aug
             case 10: // Okt
             case 12: // Dec
-                day = rand() % 31 + 1;
+                students[i].birthdate.day = rand() % 31 + 1;
                 break;
             case 4:  // Apr
             case 6:  // Jun
             case 9:  // Sep
             case 11: // Nov
-                day = rand() % 30 + 1;
+                students[i].birthdate.day = rand() % 30 + 1;
                 break;
             case 2: // Feb
                 if (students[i].birthdate.year % 4 == 0){
-                    day = rand() % 29 + 1;
+                    students[i].birthdate.day = rand() % 29 + 1;
                 }
                 else {
-                    day = rand() % 28 + 1;
+                    students[i].birthdate.day = rand() % 28 + 1;
                 }
         }
-        students[i].birthdate.day = day;
     }
 }
 
@@ -174,7 +171,7 @@ void write_database(char * File_Name){
         FILE * File_Pointer = fopen(File_Name, "w");
     
         for (int id = 0; id < current_size; id++){
-            printf("ЗАПИСЫВАЕМ ДАННЫЕ ... %d / %d\n", id + 1, current_size);
+            // printf("ЗАПИСЫВАЕМ ДАННЫЕ ... %d / %d\n", id + 1, current_size);
             fprintf(File_Pointer, "|%s|%s|%s|%d|%d|%d|%d|\n", 
                 students[id].FIO.surname,   students[id].FIO.name,        students[id].FIO.fname, 
                 students[id].group,
