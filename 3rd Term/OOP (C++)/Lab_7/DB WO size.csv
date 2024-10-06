@@ -1,0 +1,200 @@
+1;VW Tiguan;diesel;180
+2;Scoda Octavia;petrol;104
+3;Audi A6;diesel;148
+4;Audi A5;petrol;205
+5;Audi A4;petrol;140
+6;Audi Q5;diesel;149
+7;Scoda Yeti;diesel;142
+8;BMW 330i;petrol;284
+9;BMW 520d;diesel;275
+10;Mercedes-Benz CLA200;petrol;130
+11;Mercedes-Benz G55;petrol;380
+12;Toyota Yaris GR;petrol;280
+13;Toyota Corolla;petrol;110
+14;Toyota Camry;petrol;140
+15;Honda Civic;hybrid;120
+16;Honda Civic;petrol;105
+17;Honda Pilot;diesel;220
+18;Tesla Cybertruck;electric;600
+19;Tesla Roadster;electric;288
+20;Zeekr 001;electric;537
+21;Toyota Camry;petrol;180
+22;Honda Civic;petrol;150
+23;Volkswagen Golf;diesel;140
+24;Tesla Model 3;electric;258
+25;Hyundai Ioniq;hybrid;139
+26;BMW 3 Series;petrol;184
+27;Audi A4;diesel;163
+28;Nissan Leaf;electric;147
+29;Mazda3;petrol;162
+30;Kia Niro;hybrid;139
+31;Ford Focus;petrol;125
+32;Skoda Octavia;diesel;150
+33;Mercedes-Benz C-Class;petrol;204
+34;Volvo XC60;hybrid;250
+35;Peugeot 308;petrol;130
+36;Renault Megane;diesel;160
+37;Fiat 500;petrol;100
+38;Kia Sportage;hybrid;180
+39;Subaru Impreza;petrol;152
+40;Mitsubishi Outlander;hybrid;160
+41;Lexus ES;petrol;210
+42;Jaguar XE;diesel;180
+43;Land Rover Discovery;diesel;240
+44;Ford Mustang;petrol;460
+45;Chevrolet Camaro;petrol;335
+46;Dodge Challenger;petrol;375
+47;Nissan GT-R;petrol;600
+48;Porsche 911;petrol;443
+49;Audi Q5;petrol;248
+50;BMW X3;petrol;248
+51;Mercedes-Benz GLC;petrol;241
+52;Volvo XC90;hybrid;250
+53;Toyota RAV4;petrol;203
+54;Honda CR-V;petrol;190
+55;Subaru Forester;petrol;182
+56;Mazda CX-5;petrol;187
+57;Hyundai Tucson;petrol;181
+58;Kia Sorento;petrol;191
+59;Ford Escape;petrol;179
+60;Nissan Rogue;petrol;181
+61;Audi A6;petrol;248
+62;BMW 5 Series;petrol;248
+63;Mercedes-Benz E-Class;petrol;241
+64;Volvo S90;hybrid;250
+65;Toyota Corolla;petrol;203
+66;Honda Accord;petrol;190
+67;Subaru Legacy;petrol;182
+68;Mazda6;petrol;187
+69;Hyundai Elantra;petrol;181
+70;Kia Optima;petrol;191
+71;Audi A3;petrol;150
+72;BMW 1 Series;petrol;170
+73;Mercedes-Benz A-Class;petrol;160
+74;Volkswagen Jetta;petrol;147
+75;Skoda Fabia;petrol;110
+76;Renault Clio;petrol;115
+77;Peugeot 208;petrol;100
+78;Fiat Punto;petrol;95
+79;Kia Rio;petrol;130
+80;Hyundai i20;petrol;120
+81;Nissan Micra;petrol;110
+82;Ford Fiesta;petrol;120
+83;Toyota Yaris;petrol;110
+84;Honda Jazz;petrol;100
+85;Mazda2;petrol;115
+86;Subaru Impreza;petrol;152
+87;Mitsubishi Mirage;petrol;78
+88;Suzuki Swift;petrol;100
+89;Kia Picanto;petrol;83
+90;Hyundai i10;petrol;66
+91;Fiat 500L;petrol;95
+92;Volkswagen Polo;petrol;90
+93;Skoda Citigo;petrol;75
+94;Renault Twizy;electric;13
+95;Peugeot iOn;electric;64
+96;Nissan Leaf Plus;electric;214
+97;Tesla Model S;electric;778
+98;BMW i3;electric;170
+99;Audi e-tron;electric;402
+100;Mercedes-Benz EQC;electric;402
+101;Jaguar I-PACE;electric;394
+102;Hyundai Kona Electric;electric;201
+103;Kia e-Niro;electric;201
+104;Volkswagen e-Golf;electric;134
+105;Nissan e-NV200;electric;109
+106;Renault Zoe;electric;108
+107;Peugeot e-208;electric;136
+108;Fiat 500e;electric;111
+109;Honda e;electric;136
+110;Mazda MX-30;electric;143
+111;Subaru Crosstrek Hybrid;hybrid;137
+112;Toyota Prius;hybrid;121
+113;Honda Insight;hybrid;151
+114;Hyundai Ioniq Hybrid;hybrid;139
+115;Kia Niro Hybrid;hybrid;139
+116;Ford Fusion Hybrid;hybrid;188
+117;Toyota Corolla Hybrid;hybrid;121
+118;Honda CR-V Hybrid;hybrid;212
+119;Subaru Crosstrek PHEV;hybrid;137
+120;Mitsubishi Outlander PHEV;hybrid;160
+121;Acura TLX;petrol;206
+122;Alfa Romeo Giulia;petrol;280
+123;Aston Martin DB11;petrol;600
+124;Audi Q7;petrol;335
+125;Bentley Continental GT;petrol;626
+126;BMW X5;petrol;335
+127;Buick Enclave;petrol;310
+128;Cadillac CT5;petrol;237
+129;Chevrolet Bolt EV;electric;200
+130;Chrysler Pacifica;petrol;287
+131;Dodge Durango;petrol;293
+132;Ferrari Roma;petrol;612
+133;Fiat 124 Spider;petrol;164
+134;Ford Bronco;petrol;300
+135;Genesis G80;petrol;311
+136;GMC Yukon;petrol;355
+137;Honda Passport;petrol;280
+138;Hyundai Palisade;petrol;291
+139;Infiniti QX50;petrol;268
+140;Jaguar F-PACE;petrol;247
+141;Jeep Grand Cherokee;petrol;293
+142;Kia Telluride;petrol;291
+143;Lamborghini Huracan;petrol;610
+144;Land Rover Range Rover;petrol;395
+145;Lexus RX;petrol;295
+146;Lincoln Aviator;petrol;450
+147;Maserati Ghibli;petrol;345
+148;Mazda CX-9;petrol;250
+149;Mercedes-Benz GLS;petrol;362
+150;Mercedes-Benz S-Class;petrol;429
+151;Mini Cooper;petrol;189
+152;Mitsubishi Eclipse Cross;petrol;152
+153;Nissan Pathfinder;petrol;284
+154;Porsche Cayenne;petrol;335
+155;Ram 1500;petrol;395
+156;Rolls-Royce Phantom;petrol;563
+157;Subaru Ascent;petrol;260
+158;Tesla Model X;electric;778
+159;Toyota Highlander;petrol;295
+160;Volkswagen Atlas;petrol;276
+161;Volvo XC90;hybrid;250
+162;Acura NSX;hybrid;573
+163;Audi e-tron GT;electric;522
+164;BMW i4;electric;335
+165;Chevrolet Corvette;petrol;460
+166;Dodge Challenger SRT Hellcat;petrol;717
+167;Ferrari SF90 Stradale;hybrid;963
+168;Ford Mustang Shelby GT500;petrol;760
+169;Honda Clarity Hybrid;hybrid;181
+170;Hyundai Ioniq 5;electric;225
+171;Acura MDX;petrol;290
+172;Alfa Romeo Stelvio;petrol;280
+173;Aston Martin Vantage;petrol;503
+174;Audi Q8;petrol;335
+175;Bentley Bentayga;petrol;600
+176;BMW X7;petrol;335
+177;Buick Envision;petrol;230
+178;Cadillac XT5;petrol;310
+179;Chevrolet Equinox;petrol;170
+180;Chrysler 300;petrol;292
+181;Dodge Charger;petrol;292
+182;Ferrari F8 Tributo;petrol;710
+183;Fiat 500X;petrol;177
+184;Ford Explorer;petrol;300
+185;Genesis GV80;petrol;375
+186;GMC Acadia;petrol;230
+187;Honda Pilot;petrol;280
+188;Hyundai Santa Fe;petrol;235
+189;Infiniti QX60;petrol;295
+190;Jaguar F-PACE SVR;petrol;550
+191;Jeep Wrangler;petrol;285
+192;Kia Sorento;petrol;235
+193;Lamborghini Urus;petrol;641
+194;Land Rover Range Rover Velar;petrol;380
+195;Lexus RX 350;petrol;295
+196;Lincoln Aviator;petrol;450
+197;Maserati Levante;petrol;345
+198;Mazda CX-30;petrol;250
+199;Mercedes-Benz GLE;petrol;362
+200;Mercedes-Benz S-Class Coupe;petrol;429
