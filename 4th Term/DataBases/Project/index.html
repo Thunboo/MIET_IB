@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Web App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="app">
+        <div class="app-row_1">
+            <div class="logo">
+                <img src="./images/logo_no_padding.png" alt="App Logo" class="logo-img" />
+            </div>
+
+            <div class="app-content">
+                <h1>Hello, Web!</h1>
+                <button id="clickMe">Click Me</button>
+                <p id="output"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-row_2">
+        <div class="db-status">
+            <strong>Database Status:</strong> <span id="dbStatus">Not connected</span>
+        </div>
+
+        <!-- New SQL error output block -->
+        <div id="sqlError" class="sql-error">
+            <!-- ... -->
+             <p></p>
+        </div>
+
+        <div class="db-controls">
+            <select id="dbSelector">
+                <option value="">-- Select Database --</option>
+                <option value="local1">LocalDB1</option>
+                <option value="local2">LocalDB2</option>
+            </select>
+            <button id="connectBtn">Connect</button>
+        </div>
+    </div>
+
+    <!-- ✅ SQL input area -->
+    <div class="sql-input-row">
+        <textarea id="sqlInput" placeholder="Write your SQL query here..."></textarea>
+    </div>
+
+    <!-- ✅ Output area -->
+    <div class="output-row">
+        <div id="queryOutput">
+        <!-- SQL results will appear here -->
+        </div>
+    </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
