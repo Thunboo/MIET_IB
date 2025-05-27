@@ -32,7 +32,7 @@
     Нам нужен именно СУПЕРПОЛЬЗОВАТЕЛЬ!
 
     Теперь мы можем нажать на заветную кнопку `Create DB` и увидеть сообщение:
-    ![alt text](images/5.png){:width="300px"}<br>
+    <img src="images/5.png" alt="Alt text" width="300"/> <br>
 
     Снова возвращаемся к кнопке `Enter Login Form`, но теперь нам нужно подключаться к новосозданной БД:
     ![alt text](images/6.png)<br>
