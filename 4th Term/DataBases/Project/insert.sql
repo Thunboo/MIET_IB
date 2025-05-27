@@ -16,9 +16,8 @@ VALUES
 
 --select * from school_cars;
 
---delete from students_groups
-INSERT INTO students_groups(group_id)
-VALUES (1), (2), (3);
+--delete from students_groups;
+--INSERT INTO students_groups(group_id) VALUES (1), (2), (3);
 
 INSERT INTO students_groups(group_id, enrollment_date, graduation_date)
 VALUES  (1, '01-04-2025', '01-07-2025'), 
@@ -28,38 +27,40 @@ VALUES  (1, '01-04-2025', '01-07-2025'),
 --select * from students_groups;
 
 --delete from students
-INSERT INTO students(student_id, last_name, first_name, patronymic, group_id, email, inn)
+INSERT INTO students(last_name, first_name, patronymic, group_id, email, inn)
 VALUES
-(1, 'Иванов', 'Иван', 'Александрович', 1, 'ivanov-ivan@mail.ru', '770000000001'),
-(2, 'Петров', 'Сергей', 'Сергеевич', 1, 'petrov-sergei@gmail.com', '770000000002'),
-(3, 'Смирнов', 'Алексей', 'Андреевич', 1, 'smirnov-aleksei@yandex.ru', '770000000003'),
-(4, 'Попов', 'Михаил', 'Павлович', 1, 'popov-mikhail@rambler.ru', '770000000004'),
-(5, 'Васильев', 'Дмитрий', 'Владимирович', 1, 'vasilev-dmitrii@bk.ru', '770000000005'),
-(6, 'Федоров', 'Андрей', 'Константинович', 1, 'fedorov-andrei@mail.ru', '770000000006'),
-(7, 'Сорокин', 'Евгений', 'Викторович', 1, 'sorokin-evgenii@yandex.ru', '770000000007'),
-(8, 'Левин', 'Артем', 'Денисович', 1, 'levin-artem@gmail.com', '770000000008'),
-(9, 'Николаев', 'Роман', 'Борисович', 1, 'nikolaev-roman@rambler.ru', '770000000009'),
-(10, 'Семенов', 'Максим', 'Геннадьевич', 1, 'semenov-maksim@bk.ru', '770000000010'),
-(11, 'Алексеев', 'Александр', 'Валерьевич', 2, 'alekseev-aleksandr@mail.ru', '770000000011'),
-(12, 'Коваленко', 'Антон', 'Игоревич', 2, 'kovalenko-anton@yandex.ru', '770000000012'),
-(13, 'Шестаков', 'Кирилл', 'Станиславович', 2, 'shestakov-kirill@rambler.ru', '770000000013'),
-(14, 'Савельев', 'Владимир', 'Леонидович', 2, 'savelyev-vladimir@bk.ru', '770000000014'),
-(15, 'Самохвалов', 'Степан', 'Дмитриевич', 2, 'samohvalov-stepan@mail.ru', '770000000015'),
-(16, 'Chen', 'Yifeng', NULL, 2, 'chen-yifeng@gmail.com', '770000000016'), -- Китайские студент
-(17, 'Lee', 'Seung-hyun', NULL, 2, 'lee-seunghyun@yahoo.co.kr', '770000000017'), -- Южнокорейский студент
-(18, 'Sharma', 'Ankit', NULL, 2, 'sharma-ankit@hotmail.in', '770000000018'), -- Индийский студент
-(19, 'Ishikawa', 'Naoki', NULL, 2, 'ishikawa-naoki@soramame.jp', '770000000019'), -- Японский студент
-(20, 'Андреев', 'Денис', 'Игоревич', 2, 'andreev-denis@rambler.ru', '770000000020'),
-(21, 'Петрова', 'Анна', 'Ивановна', 3, 'petrova-anna@mail.ru', '770000000021'),
-(22, 'Смирнова', 'Ольга', 'Витальевна', 3, 'smirnova-olga@yandex.ru', '770000000022'),
-(23, 'Попова', 'Марина', 'Петровна', 3, 'popova-marina@rambler.ru', '770000000023'),
-(24, 'Васильева', 'Светлана', 'Георгиевна', 3, 'vasileva-svetlana@bk.ru', '770000000024'),
-(25, 'Федорова', 'Дарья', 'Ростиславовна',3, 'fedorova-daria@mail.ru', '770000000025'),
-(26, 'Сорокина', 'Инна', 'Анатольевна', 3, 'sorokina-inna@yandex.ru', '770000000026'),
-(27, 'Львов', 'Арсен', 'Игнатьевич', 3, 'lvov-arsen@rambler.ru', '770000000027'),
-(28, 'Морозов', 'Филипп', 'Леонидович', 3, 'morozov-filipp@bk.ru', '770000000028'),
-(29, 'Черненко', 'Карина', 'Игоревна', 3, 'chernenko-karina@mail.ru', '770000000029'),
-(30, 'Новиков', 'Эдуард', 'Владимирович', 3, 'novikov-eduard@yandex.ru', '770000000030');
+('Иванов', 'Иван', 'Александрович', 1, 'ivanov-ivan@mail.ru', '770000000001'),
+('Петров', 'Сергей', 'Сергеевич', 1, 'petrov-sergei@gmail.com', '770000000002'),
+('Смирнов', 'Алексей', 'Андреевич', 1, 'smirnov-aleksei@yandex.ru', '770000000003'),
+('Попов', 'Михаил', 'Павлович', 1, 'popov-mikhail@rambler.ru', '770000000004'),
+('Васильев', 'Дмитрий', 'Владимирович', 1, 'vasilev-dmitrii@bk.ru', '770000000005'),
+('Федоров', 'Андрей', 'Константинович', 1, 'fedorov-andrei@mail.ru', '770000000006'),
+('Сорокин', 'Евгений', 'Викторович', 1, 'sorokin-evgenii@yandex.ru', '770000000007'),
+('Левин', 'Артем', 'Денисович', 1, 'levin-artem@gmail.com', '770000000008'),
+('Николаев', 'Роман', 'Борисович', 1, 'nikolaev-roman@rambler.ru', '770000000009'),
+('Семенов', 'Максим', 'Геннадьевич', 1, 'semenov-maksim@bk.ru', '770000000010'),
+('Алексеев', 'Александр', 'Валерьевич', 2, 'alekseev-aleksandr@mail.ru', '770000000011'),
+('Коваленко', 'Антон', 'Игоревич', 2, 'kovalenko-anton@yandex.ru', '770000000012'),
+('Шестаков', 'Кирилл', 'Станиславович', 2, 'shestakov-kirill@rambler.ru', '770000000013'),
+('Савельев', 'Владимир', 'Леонидович', 2, 'savelyev-vladimir@bk.ru', '770000000014'),
+('Самохвалов', 'Степан', 'Дмитриевич', 2, 'samohvalov-stepan@mail.ru', '770000000015'),
+('Chen', 'Yifeng', NULL, 2, 'chen-yifeng@gmail.com', '770000000016'), -- Китайские студент
+('Lee', 'Seung-hyun', NULL, 2, 'lee-seunghyun@yahoo.co.kr', '770000000017'), -- Южнокорейский студент
+('Sharma', 'Ankit', NULL, 2, 'sharma-ankit@hotmail.in', '770000000018'), -- Индийский студент
+('Ishikawa', 'Naoki', NULL, 2, 'ishikawa-naoki@soramame.jp', '770000000019'), -- Японский студент
+('Андреев', 'Денис', 'Игоревич', 2, 'andreev-denis@rambler.ru', '770000000020'),
+('Петрова', 'Анна', 'Ивановна', 3, 'petrova-anna@mail.ru', '770000000021'),
+('Смирнова', 'Ольга', 'Витальевна', 3, 'smirnova-olga@yandex.ru', '770000000022'),
+('Попова', 'Марина', 'Петровна', 3, 'popova-marina@rambler.ru', '770000000023'),
+('Васильева', 'Светлана', 'Георгиевна', 3, 'vasileva-svetlana@bk.ru', '770000000024'),
+('Федорова', 'Дарья', 'Ростиславовна',3, 'fedorova-daria@mail.ru', '770000000025'),
+('Сорокина', 'Инна', 'Анатольевна', 3, 'sorokina-inna@yandex.ru', '770000000026'),
+('Львов', 'Арсен', 'Игнатьевич', 3, 'lvov-arsen@rambler.ru', '770000000027'),
+('Морозов', 'Филипп', 'Леонидович', 3, 'morozov-filipp@bk.ru', '770000000028'),
+('Черненко', 'Карина', 'Игоревна', 3, 'chernenko-karina@mail.ru', '770000000029'),
+('Новиков', 'Эдуард', 'Владимирович', 3, 'novikov-eduard@yandex.ru', '770000000030');
+
+--CALL graduate_student_nodate(1);
 
 --select * from students;
 
@@ -81,7 +82,7 @@ END
 $$;
 ------------------------------------------
 
-INSERT INTO graduates(last_name, first_name, patronymic)
+INSERT INTO students(last_name, first_name, patronymic)
 VALUES
 ('Петров', 'Сергей', 'Сергеевич'),
 ('Смирнов', 'Алексей', 'Андреевич'),
@@ -97,12 +98,25 @@ VALUES
 ('Шестаков', 'Кирилл', 'Станиславович'),
 ('Савельев', 'Владимир', 'Леонидович'),
 ('Самохвалов', 'Степан', 'Дмитриевич'),
-('Wang', 'Linlin', NULL), -- китайский выпускник
-('Patel', 'Sanjay', NULL), -- индийский выпускник
-('Tanaka', 'Ryosuke', NULL), -- японский выпускник
-('Nguyen', 'Thuy', NULL), -- вьетнамский выпускник
-('Petrovich', 'Marko', NULL); -- сербский выпускник
+('Wang', 'Linlin', NULL), -- китаец
+('Patel', 'Sanjay', NULL), -- индус
+('Tanaka', 'Ryosuke', NULL), -- японкц
+('Nguyen', 'Thuy', NULL), -- вьетнамкц
+('Petrovich', 'Marko', NULL); -- серб
 
+DO
+$$
+DECLARE
+	rc record;
+BEGIN
+	FOR rc IN SELECT student_id FROM students
+	loop
+		IF rc.student_id BETWEEN 31 AND 49
+			THEN CALL graduate_student_nodate(rc.student_id);
+		END IF;
+	end loop;
+END
+$$;
 --select * from graduates;
 
 INSERT INTO professors(professor_id, last_name, first_name, patronymic, experience_years)
