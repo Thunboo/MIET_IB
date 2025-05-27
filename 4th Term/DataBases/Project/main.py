@@ -1,9 +1,10 @@
 import tkinter as tk
 import psycopg2
+from psycopg2 import sql
 from tkinter import messagebox
 import pandas as pd
 
-# from db_scripts.create_db import create_all_tables, create_triggers, insert_data
+from db_scripts.create_db import create_all_tables, create_triggers, insert_data, create_role
 
 
 class DatabaseApp:
@@ -61,6 +62,10 @@ class DatabaseApp:
                   command=self.process_query, font=("Consolas", 12)).pack(side=tk.LEFT, padx=2)
         tk.Button(button_frame, text="Clear", 
                   command=lambda: self.output_text.delete("1.0", tk.END),  font=("Consolas", 12)).pack(side=tk.LEFT, padx=2)
+        tk.Button(button_frame, text="Create DB", 
+                  command=self.setup_db,  font=("Consolas", 12)).pack(side=tk.LEFT, padx=2)
+        tk.Button(button_frame, text="Fill DB", 
+                  command=self.fill_db,  font=("Consolas", 12)).pack(side=tk.LEFT, padx=2)
         tk.Button(button_frame, text="Enter Login Form", 
                   command=self.show_login_dialog, font=("Consolas", 12)).pack(side=tk.RIGHT, padx=2)
 
@@ -172,6 +177,51 @@ Error Diag: {e.diag}\n
         except Exception as e:
             tk.messagebox.showerror("Ошибка", f"Ошибка запроса: {e}")
     
+    def setup_db(self):
+        # print("in setup db")
+        tk.messagebox.showwarning("WARNING", "To create a DB you should connect to any other DB with a superuser (e.g. postgres)")
+        try:
+            if not self.conn:
+                tk.messagebox.showwarning("Error", "You shall connect to the DB first")
+                raise Exception("No DB connection")
+            
+            self.conn.autocommit = True
+            with self.conn.cursor() as cursor:
+                cursor.execute(sql.SQL("CREATE DATABASE {};").format(
+                    sql.Identifier("driving_school"))
+                    )
+                
+                self.notice_label["text"] = "DB was successfully created"
+                return
+        except Exception as e:
+            tk.messagebox.showerror("Error", f"Query error: {e}")
+
+    def fill_db(self):
+        # print("in fill db")
+        tk.messagebox.showwarning("NOTICE", "Now You shall connect to the driving_school DB with superuser")
+        try:
+            if not self.conn:
+                tk.messagebox.showwarning("Error", "You shall connect to the New DB first")
+                raise Exception("No DB connection")
+                
+            self.conn.autocommit = True
+            with self.conn.cursor() as cursor:
+                cursor.execute("SELECT CURRENT_DATABASE()")
+                
+                if "driving_school" != cursor.fetchone()[0]:
+                    tk.messagebox.showwarning("Error", "You shall connect to the New DB")
+                    return
+
+                create_all_tables(cursor); print("Created Tables")
+                create_triggers(cursor)  ; print("Created Trigger")
+                insert_data(cursor)      ; print("Filled Tables")
+                create_role(cursor)      ; print("Created Role")
+
+                self.notice_label["text"] = "DB was successfully filled. New Role was created"
+                return
+        except Exception as e:
+            tk.messagebox.showerror("Error", f"Query error: {e}") 
+
     def run(self):
         self.root.mainloop()
 

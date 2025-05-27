@@ -1,0 +1,701 @@
+# Create DB script containing all functions
+
+def create_all_tables(cursor) -> None:
+    """
+    Create all tables and constraints in Driving school database
+    """
+    
+    cursor.execute("""
+-- Создаём таблицу для Учебных авто
+CREATE TABLE school_cars (
+    car_plate varchar(9) NOT NULL,
+	brand varchar(30) NOT NULL,
+	model varchar(30) NOT NULL,
+    manufacture_year int
+);
+
+-- Создаём таблицу для сертификатов выпускников Автошколы
+CREATE TABLE graduates (
+    graduate_certificate_id varchar(20),
+	student_id int,
+	graduation_date date NOT NULL
+);
+	
+-- Создаём таблицу Преподавателей и Инструкторов
+CREATE TABLE professors (
+    professor_id int NOT NULL,
+	last_name varchar(30) NOT NULL,
+	first_name varchar(30) NOT NULL,
+	patronymic varchar(30),
+    experience_years int NOT NULL
+);
+
+-- Создаём таблицу трудоустроств Преподавателей и Инструкторов
+CREATE TABLE employments (
+    professor_id int,
+    employed_since date,
+	salary money
+);
+
+-- Создаём таблицу под группы учащихся
+CREATE TABLE students_groups (
+    group_id int, --NOT NULL,
+    enrollment_date date DEFAULT CURRENT_DATE NOT NULL,
+	graduation_date date DEFAULT (CURRENT_DATE + '3 months'::interval) NOT NULL
+);
+	
+-- Создаём таблицу Учащихся
+CREATE TABLE students (
+    student_id SERIAL NOT NULL,
+	last_name varchar(30) NOT NULL,
+	first_name varchar(30) NOT NULL,
+	patronymic varchar(30),
+	group_id int DEFAULT NULL,
+	car_plate varchar(9) NOT NULL DEFAULT 'О000ОО00',
+	email varchar(30),
+	inn varchar(12) DEFAULT '770000000000'::character varying
+);
+
+-- Создаём таблицу занятий (связь профессор-студент)
+CREATE TABLE lessons (
+	lesson_type varchar(8),
+    professor_id int NOT NULL,
+    student_id int NOT NULL,
+	group_id int,
+	lesson_date date DEFAULT CURRENT_DATE NOT NULL
+);
+
+-- Ограничения -------------------------------
+
+-- school_cars
+ALTER TABLE ONLY school_cars
+    ADD CONSTRAINT school_cars_pkey PRIMARY KEY (car_plate);
+ALTER TABLE ONLY school_cars
+	ADD CONSTRAINT school_cars_car_plate_check CHECK (car_plate ~* '^[АВЕКМНОРСТУХ]{1}[0-9]{3}[АВЕКМНОРСТУХ]{2}[0-9]{2,3}$');
+ALTER TABLE ONLY school_cars
+	ADD CONSTRAINT school_cars_manufacture_year_check 
+		CHECK (manufacture_year > 1990 AND manufacture_year <= EXTRACT(year from CURRENT_DATE)::int);
+ 
+-- students_groups
+ALTER TABLE ONLY students_groups
+    ADD CONSTRAINT students_groups_pkey PRIMARY KEY (group_id);
+
+-- students
+ALTER TABLE ONLY students
+    ADD CONSTRAINT students_pkey PRIMARY KEY (student_id);
+ALTER TABLE ONLY students
+    ADD CONSTRAINT students_students_groups_fkey FOREIGN KEY (group_id) REFERENCES students_groups(group_id) ON DELETE SET DEFAULT;
+ALTER TABLE ONLY students
+	ADD CONSTRAINT students_cars_fkey FOREIGN KEY (car_plate) REFERENCES school_cars(car_plate) ON DELETE SET DEFAULT;
+ALTER TABLE ONLY students
+    ADD CONSTRAINT students_email_check CHECK ((email)::text ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'::text);
+
+-- graduates
+ALTER TABLE ONLY graduates
+    ADD CONSTRAINT graduates_pkey PRIMARY KEY (graduate_certificate_id);
+ALTER TABLE ONLY graduates
+	ADD CONSTRAINT graduates_graduation_date_check CHECK (graduation_date < CURRENT_DATE + '1 days'::interval);
+ALTER TABLE ONLY graduates
+	ADD CONSTRAINT graduates_student_id_fkey FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE;
+	
+-- professors
+ALTER TABLE ONLY professors
+    ADD CONSTRAINT professors_pkey PRIMARY KEY (professor_id);
+ALTER TABLE ONLY professors
+	ADD CONSTRAINT professors_experience_check CHECK (experience_years > 3);
+
+-- employments
+ALTER TABLE ONLY employments
+    ADD CONSTRAINT employments_pkey PRIMARY KEY (professor_id);
+ALTER TABLE ONLY employments
+    ADD CONSTRAINT employments_professor_id_fkey FOREIGN KEY (professor_id) REFERENCES professors(professor_id) ON DELETE CASCADE;
+ALTER TABLE ONLY employments
+	ADD CONSTRAINT employments_employed_since_check CHECK (employed_since < CURRENT_DATE + '15 days'::interval);
+
+-- lessons
+ALTER TABLE ONLY lessons
+    ADD CONSTRAINT lessons_pkey PRIMARY KEY (student_id, group_id, lesson_date);
+ALTER TABLE ONLY lessons
+    ADD CONSTRAINT lessons_professor_id_fkey FOREIGN KEY (professor_id) REFERENCES professors(professor_id);-- ON DELETE CASCADE;
+ALTER TABLE ONLY lessons
+    ADD CONSTRAINT lessons_student_id_fkey FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE;
+ALTER TABLE ONLY lessons
+    ADD CONSTRAINT lessons_group_id_fkey FOREIGN KEY (group_id) REFERENCES students_groups(group_id);-- ON DELETE CASCADE;
+ALTER TABLE ONLY lessons
+	ADD CONSTRAINT lesson_type_check CHECK (lesson_type ~* '^Практика$' OR lesson_type ~* '^Теория$');
+
+-- Индексы --------------------------------------------
+
+CREATE INDEX ON lessons (student_id);
+	
+    """)
+
+def create_triggers(cursor) -> None:
+    """
+    Create all triggers in Driving school database
+    """
+
+    cursor.execute("""
+-- Триггеры, процедуры и функции ----------------------
+
+CREATE OR REPLACE FUNCTION compute_certificate_id()
+RETURNS TRIGGER
+LANGUAGE PLPGSQL AS
+$$
+BEGIN
+ 	NEW.graduate_certificate_id := '777-' ||
+		CURRENT_DATE || '-' || 
+		LPAD(NEW.student_id::text, 5, '0');
+ 	RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE TRIGGER set_certificate_id 
+BEFORE INSERT
+ON graduates
+FOR EACH ROW
+EXECUTE FUNCTION compute_certificate_id();
+------------
+CREATE OR REPLACE PROCEDURE graduate_student_nodate(param_student_id int)
+LANGUAGE SQL AS
+$$
+	INSERT INTO graduates (student_id
+						 , graduation_date)
+	VALUES (param_student_id, CURRENT_DATE);
+
+	UPDATE students
+	SET car_plate = DEFAULT
+	WHERE student_id = param_student_id;
+$$;
+
+CREATE OR REPLACE PROCEDURE graduate_student_date(param_student_id int, param_date date)
+LANGUAGE SQL AS
+$$
+	INSERT INTO graduates (student_id
+						 , graduation_date)
+	VALUES (param_student_id, param_date);
+	
+	UPDATE students
+	SET car_plate = DEFAULT
+	WHERE student_id = param_student_id;
+$$;
+-----------------
+-- empty group
+CREATE OR REPLACE PROCEDURE add_empty_group_id()
+LANGUAGE PLPGSQL AS
+$$
+BEGIN
+	IF (SELECT count(*) FROM students_groups
+		WHERE group_id = -1) = 0
+	THEN
+		INSERT INTO students_groups(group_id, enrollment_date, graduation_date)
+		VALUES (-1, '01-01-2023', '01-01-2023'); 
+	END IF;
+END;
+$$;
+
+CALL add_empty_group_id();
+
+CREATE OR REPLACE FUNCTION dont_remove_empty_group_id_func() 
+RETURNS TRIGGER
+LANGUAGE PLPGSQL AS
+$$
+BEGIN
+	CALL add_empty_group_id();
+	RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE TRIGGER dont_remove_empty_group_id 
+AFTER DELETE
+ON students_groups
+FOR EACH STATEMENT
+EXECUTE FUNCTION dont_remove_empty_group_id_func();
+--------------------
+CREATE OR REPLACE FUNCTION no_group_id()
+RETURNS TRIGGER
+LANGUAGE PLPGSQL AS
+$$
+BEGIN
+	IF NEW.group_id IS NULL
+		THEN NEW.group_id = -1; 
+	END IF;
+ 	RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE TRIGGER no_group_id_given 
+BEFORE INSERT
+ON students_groups
+FOR EACH ROW
+EXECUTE FUNCTION no_group_id();
+
+CREATE OR REPLACE TRIGGER no_group_id_given 
+BEFORE INSERT
+ON lessons
+FOR EACH ROW
+EXECUTE FUNCTION no_group_id();
+
+CREATE OR REPLACE TRIGGER no_group_id_given 
+BEFORE INSERT
+ON students
+FOR EACH ROW
+EXECUTE FUNCTION no_group_id();
+---------------------
+CREATE OR REPLACE PROCEDURE add_group_date(param_group_id int, param_enr_date date)
+LANGUAGE PLPGSQL AS
+$$
+BEGIN
+	IF param_group_id NOT IN (select group_id from students_groups)
+	THEN
+		INSERT INTO students_groups (group_id
+							 	   , enrollment_date)
+		VALUES (param_group_id, param_enr_date);
+	ELSE
+		raise notice 'That group (%) has been already added', param_group_id;
+	END IF;
+END;
+$$;
+
+CREATE OR REPLACE PROCEDURE add_group_nodate(param_group_id int)
+LANGUAGE PLPGSQL AS
+$$
+BEGIN
+	IF param_group_id NOT IN (select group_id from students_groups)
+	THEN
+		INSERT INTO students_groups (group_id
+						 	   , enrollment_date)
+		VALUES (param_group_id, CURRENT_DATE);
+	ELSE
+		raise notice 'That group (%) has been already added', param_group_id;
+	END IF;
+END;
+$$;
+-----------------------
+CREATE OR REPLACE PROCEDURE add_student(param_ln varchar(30)
+									   , param_fn varchar(30)
+									   , param_pnmc varchar(30)
+									   , param_group_id int
+									   , param_email varchar(30)
+									   , param_inn varchar(12))
+LANGUAGE SQL AS
+$$
+	INSERT INTO students(last_name
+						, first_name
+						, patronymic
+						, group_id
+						, email
+						, inn)
+	VALUES (param_ln, param_fn, param_pnmc, param_group_id, param_email, param_inn);
+$$;
+    """) 
+
+def insert_data(cursor) -> None:
+    """
+    Inserting all data into Driving school database
+    """
+
+    cursor.execute("""
+INSERT INTO school_cars (car_plate, brand, model, manufacture_year)
+VALUES
+('О000ОО00', 'Без', 'Авто', 2022), 
+('А123АА77', 'Kia', 'Rio', 2019),
+('Р456ОО77', 'Kia', 'Rio', 2020),
+('Е789ММ77', 'Hyundai', 'Solaris', 2018),
+('К123СС77', 'Hyundai', 'Solaris', 2019),
+('Н456НН77', 'Volkswagen', 'Polo', 2020),
+('О789РР77', 'Volkswagen', 'Polo', 2021),
+('С123КС77', 'Skoda', 'Rapid', 2022),
+('Т456МТ77', 'Skoda', 'Rapid', 2023),
+('У789ЕР77', 'Daewoo', 'Matiz', 2016),
+('А123НК77', 'Toyota', 'Corolla', 2020),
+('К456КО77', 'Opel', 'Astra', 2019),
+('Н789МК77', 'Renault', 'Sandero', 2021);
+
+--select * from school_cars;
+
+--delete from students_groups;
+--INSERT INTO students_groups(group_id) VALUES (1), (2), (3);
+
+INSERT INTO students_groups(group_id, enrollment_date, graduation_date)
+VALUES  (1, '01-04-2025', '01-07-2025'), 
+		(2, '22-04-2025', '22-07-2025'), 
+		(3, '13-05-2025', '13-07-2025');
+
+--select * from students_groups;
+
+--delete from students
+INSERT INTO students(last_name, first_name, patronymic, group_id, email, inn)
+VALUES
+('Иванов', 'Иван', 'Александрович', 1, 'ivanov-ivan@mail.ru', '770000000001'),
+('Петров', 'Сергей', 'Сергеевич', 1, 'petrov-sergei@gmail.com', '770000000002'),
+('Смирнов', 'Алексей', 'Андреевич', 1, 'smirnov-aleksei@yandex.ru', '770000000003'),
+('Попов', 'Михаил', 'Павлович', 1, 'popov-mikhail@rambler.ru', '770000000004'),
+('Васильев', 'Дмитрий', 'Владимирович', 1, 'vasilev-dmitrii@bk.ru', '770000000005'),
+('Федоров', 'Андрей', 'Константинович', 1, 'fedorov-andrei@mail.ru', '770000000006'),
+('Сорокин', 'Евгений', 'Викторович', 1, 'sorokin-evgenii@yandex.ru', '770000000007'),
+('Левин', 'Артем', 'Денисович', 1, 'levin-artem@gmail.com', '770000000008'),
+('Николаев', 'Роман', 'Борисович', 1, 'nikolaev-roman@rambler.ru', '770000000009'),
+('Семенов', 'Максим', 'Геннадьевич', 1, 'semenov-maksim@bk.ru', '770000000010'),
+('Алексеев', 'Александр', 'Валерьевич', 2, 'alekseev-aleksandr@mail.ru', '770000000011'),
+('Коваленко', 'Антон', 'Игоревич', 2, 'kovalenko-anton@yandex.ru', '770000000012'),
+('Шестаков', 'Кирилл', 'Станиславович', 2, 'shestakov-kirill@rambler.ru', '770000000013'),
+('Савельев', 'Владимир', 'Леонидович', 2, 'savelyev-vladimir@bk.ru', '770000000014'),
+('Самохвалов', 'Степан', 'Дмитриевич', 2, 'samohvalov-stepan@mail.ru', '770000000015'),
+('Chen', 'Yifeng', NULL, 2, 'chen-yifeng@gmail.com', '770000000016'), -- Китайские студент
+('Lee', 'Seung-hyun', NULL, 2, 'lee-seunghyun@yahoo.co.kr', '770000000017'), -- Южнокорейский студент
+('Sharma', 'Ankit', NULL, 2, 'sharma-ankit@hotmail.in', '770000000018'), -- Индийский студент
+('Ishikawa', 'Naoki', NULL, 2, 'ishikawa-naoki@soramame.jp', '770000000019'), -- Японский студент
+('Андреев', 'Денис', 'Игоревич', 2, 'andreev-denis@rambler.ru', '770000000020'),
+('Петрова', 'Анна', 'Ивановна', 3, 'petrova-anna@mail.ru', '770000000021'),
+('Смирнова', 'Ольга', 'Витальевна', 3, 'smirnova-olga@yandex.ru', '770000000022'),
+('Попова', 'Марина', 'Петровна', 3, 'popova-marina@rambler.ru', '770000000023'),
+('Васильева', 'Светлана', 'Георгиевна', 3, 'vasileva-svetlana@bk.ru', '770000000024'),
+('Федорова', 'Дарья', 'Ростиславовна',3, 'fedorova-daria@mail.ru', '770000000025'),
+('Сорокина', 'Инна', 'Анатольевна', 3, 'sorokina-inna@yandex.ru', '770000000026'),
+('Львов', 'Арсен', 'Игнатьевич', 3, 'lvov-arsen@rambler.ru', '770000000027'),
+('Морозов', 'Филипп', 'Леонидович', 3, 'morozov-filipp@bk.ru', '770000000028'),
+('Черненко', 'Карина', 'Игоревна', 3, 'chernenko-karina@mail.ru', '770000000029'),
+('Новиков', 'Эдуард', 'Владимирович', 3, 'novikov-eduard@yandex.ru', '770000000030');
+
+--CALL graduate_student_nodate(1);
+
+--select * from students;
+
+-- Выдача учащимся случайных учебных авто
+DO
+$$
+DECLARE
+	rc record;
+BEGIN
+	FOR rc IN SELECT student_id FROM students
+	loop
+		raise notice '%', rc.student_id;
+	
+		UPDATE students s
+		SET car_plate = (SELECT car_plate FROM school_cars ORDER BY random() LIMIT 1)
+		WHERE s.student_id = rc.student_id;
+	end loop;
+END
+$$;
+------------------------------------------
+
+INSERT INTO students(last_name, first_name, patronymic)
+VALUES
+('Петров', 'Сергей', 'Сергеевич'),
+('Смирнов', 'Алексей', 'Андреевич'),
+('Попов', 'Михаил', 'Павлович'),
+('Васильев', 'Дмитрий', 'Владимирович'),
+('Федоров', 'Андрей', 'Константинович'),
+('Сорокин', 'Евгений', 'Викторович'),
+('Левин', 'Артем', 'Денисович'),
+('Николаев', 'Роман', 'Борисович'),
+('Семенов', 'Максим', 'Геннадьевич'),
+('Алексеев', 'Александр', 'Валерьевич'),
+('Коваленко', 'Антон', 'Игоревич'),
+('Шестаков', 'Кирилл', 'Станиславович'),
+('Савельев', 'Владимир', 'Леонидович'),
+('Самохвалов', 'Степан', 'Дмитриевич'),
+('Wang', 'Linlin', NULL), -- китаец
+('Patel', 'Sanjay', NULL), -- индус
+('Tanaka', 'Ryosuke', NULL), -- японкц
+('Nguyen', 'Thuy', NULL), -- вьетнамкц
+('Petrovich', 'Marko', NULL); -- серб
+
+DO
+$$
+DECLARE
+	rc record;
+BEGIN
+	FOR rc IN SELECT student_id FROM students
+	loop
+		IF rc.student_id BETWEEN 31 AND 49
+			THEN CALL graduate_student_nodate(rc.student_id);
+		END IF;
+	end loop;
+END
+$$;
+--select * from graduates;
+
+INSERT INTO professors(professor_id, last_name, first_name, patronymic, experience_years)
+VALUES
+(1, 'Иванов', 'Иван', 'Александрович', 15),
+(2, 'Петров', 'Сергей', 'Сергеевич', 20),
+(3, 'Саркисян', 'Гарегин', 'Арташесович', 18),
+(4, 'Давтян', 'Аваг', 'Варданович', 25),
+(5, 'Маркосян', 'Виген', 'Албертович', 12),
+(6, 'Федоров', 'Андрей', 'Константинович', 30),
+(7, 'Сорокин', 'Евгений', 'Викторович', 10),
+(8, 'Мелконян', 'Армен', 'Айказович', 22),
+(9, 'Арутюнян', 'Арам', 'Артакович', 14), 
+(10, 'Николаев', 'Роман', 'Борисович', 28),
+(11, 'Алескерян', 'Акоп', 'Агабекович', 35), 
+(12, 'Коваленко', 'Антон', 'Игоревич', 20),
+(13, 'Шестаков', 'Кирилл', 'Станиславович', 16),
+(14, 'Савельев', 'Владимир', 'Леонидович', 32),
+(15, 'Самохвалов', 'Степан', 'Дмитриевич', 19),
+(16, 'Львов', 'Арсен', 'Игнатьевич', 24),
+(17, 'Морозов', 'Филипп', 'Леонидович', 27),
+(18, 'Черненко', 'Карина', 'Игоревна', 30),
+(19, 'Новиков', 'Эдуард', 'Владимирович', 38),
+(20, 'Петрова', 'Анна', 'Ивановна', 17);
+
+--select * from professors;
+
+INSERT INTO employments(professor_id, employed_since, salary)
+VALUES
+(1, '2023-01-15', '75000'),
+(2, '2023-03-20', '100000'),
+(3, '2023-05-10', '80000'),
+(4, '2023-07-01', '120000'),
+(5, '2023-09-15', '65000'),
+(6, '2023-11-20', '95000'),
+(7, '2024-01-10', '60000'),
+(8, '2024-03-01', '110000'),
+(9, '2024-05-15', '70000'),
+(10, '2024-07-20', '130000'),
+(11, '2024-09-10', '150000'),
+(12, '2024-11-01', '85000'),
+(13, '2023-02-15', '75000'),
+(14, '2023-04-20', '90000'),
+(15, '2023-06-10', '65000'),
+(16, '2023-08-01', '80000'),
+(17, '2023-10-15', '105000'),
+(18, '2023-12-20', '60000'),
+(19, '2024-02-10', '125000'),
+(20, '2024-04-01', '55000');
+
+--select * from employments;
+
+--delete from lessons where 1=1;
+--truncate lessons restart identity;
+
+--select * from lessons
+
+INSERT INTO lessons(lesson_type, professor_id, student_id, group_id, lesson_date)
+VALUES
+('Теория', 6, 1, 1, '13-05-2025'),
+('Теория', 6, 2, 1, '13-05-2025'),
+('Теория', 6, 3, 1, '13-05-2025'),
+('Теория', 6, 4, 1, '13-05-2025'),
+('Теория', 6, 5, 1, '13-05-2025'),
+('Теория', 6, 6, 1, '13-05-2025'),
+('Теория', 6, 7, 1, '13-05-2025'),
+('Теория', 6, 8, 1, '13-05-2025'),
+('Теория', 6, 9, 1, '13-05-2025'),
+('Теория', 6, 10, 1, '13-05-2025'),
+('Практика', 19, 5, NULL, '03-04-2025'),
+('Практика', 18, 12, NULL, '25-04-2025'),
+('Практика', 10, 28, NULL, '17-05-2025'),
+('Практика', 19, 4, NULL, '04-04-2025'),
+('Практика', 17, 20, NULL, '26-04-2025'),
+('Практика', 20, 28, NULL, '18-05-2025'),
+('Практика', 13, 2, NULL, '05-04-2025'),
+('Практика', 18, 20, NULL, '27-04-2025'),
+('Практика', 3, 21, NULL, '19-05-2025'),
+('Практика', 14, 2, NULL, '06-04-2025'),
+('Практика', 12, 20, NULL, '28-04-2025'),
+('Практика', 20, 23, NULL, '20-05-2025'),
+('Практика', 5, 3, NULL, '07-04-2025'),
+('Практика', 15, 17, NULL, '29-04-2025'),
+('Практика', 4, 25, NULL, '21-05-2025'),
+('Практика', 3, 3, NULL, '08-04-2025'),
+('Практика', 13, 15, NULL, '30-04-2025'),
+('Практика', 7, 28, NULL, '22-05-2025'),
+('Практика', 5, 3, NULL, '09-04-2025'),
+('Практика', 12, 11, NULL, '01-05-2025'),
+('Практика', 11, 29, NULL, '23-05-2025'),
+('Практика', 11, 8, NULL, '10-04-2025'),
+('Практика', 11, 18, NULL, '02-05-2025'),
+('Практика', 19, 27, NULL, '24-05-2025'),
+('Практика', 1, 4, NULL, '11-04-2025'),
+('Практика', 3, 18, NULL, '03-05-2025'),
+('Практика', 3, 26, NULL, '25-05-2025'),
+('Практика', 4, 3, NULL, '12-04-2025'),
+('Практика', 1, 15, NULL, '04-05-2025'),
+('Практика', 18, 27, NULL, '26-05-2025'),
+('Практика', 6, 4, NULL, '13-04-2025'),
+('Практика', 7, 13, NULL, '05-05-2025'),
+('Практика', 15, 30, NULL, '27-05-2025'),
+('Практика', 13, 3, NULL, '14-04-2025'),
+('Практика', 11, 15, NULL, '06-05-2025'),
+('Практика', 12, 23, NULL, '28-05-2025'),
+('Практика', 10, 10, NULL, '15-04-2025'),
+('Практика', 18, 14, NULL, '07-05-2025'),
+('Практика', 15, 26, NULL, '29-05-2025'),
+('Практика', 17, 9, NULL, '16-04-2025'),
+('Практика', 16, 15, NULL, '08-05-2025'),
+('Практика', 8, 26, NULL, '30-05-2025'),
+('Практика', 10, 9, NULL, '17-04-2025'),
+('Практика', 2, 12, NULL, '09-05-2025'),
+('Практика', 7, 22, NULL, '31-05-2025'),
+('Практика', 15, 8, NULL, '18-04-2025'),
+('Практика', 20, 13, NULL, '10-05-2025'),
+('Практика', 20, 30, NULL, '01-06-2025'),
+('Практика', 18, 8, NULL, '19-04-2025'),
+('Практика', 8, 17, NULL, '11-05-2025'),
+('Практика', 14, 27, NULL, '02-06-2025'),
+('Практика', 4, 8, NULL, '20-04-2025'),
+('Практика', 2, 14, NULL, '12-05-2025'),
+('Практика', 10, 27, NULL, '03-06-2025'),
+('Практика', 7, 6, NULL, '21-04-2025'),
+('Практика', 20, 12, NULL, '13-05-2025'),
+('Практика', 18, 21, NULL, '04-06-2025'),
+('Практика', 5, 9, NULL, '22-04-2025'),
+('Практика', 20, 14, NULL, '14-05-2025'),
+('Практика', 19, 28, NULL, '05-06-2025'),
+('Теория', 10, 21, 3, '24-06-2025'),
+('Теория', 10, 22, 3, '24-06-2025'),
+('Теория', 10, 23, 3, '24-06-2025'),
+('Теория', 10, 24, 3, '24-06-2025'),
+('Теория', 10, 25, 3, '24-06-2025'),
+('Теория', 10, 26, 3, '24-06-2025'),
+('Теория', 10, 27, 3, '24-06-2025'),
+('Теория', 10, 28, 3, '24-06-2025'),
+('Теория', 10, 29, 3, '24-06-2025'),
+('Теория', 10, 30, 3, '24-06-2025'),
+('Практика', 2, 7, NULL, '24-04-2025'),
+('Практика', 13, 13, NULL, '16-05-2025'),
+('Практика', 15, 30, NULL, '07-06-2025'),
+('Практика', 16, 2, NULL, '25-04-2025'),
+('Практика', 12, 16, NULL, '17-05-2025'),
+('Практика', 7, 26, NULL, '08-06-2025'),
+('Практика', 19, 7, NULL, '26-04-2025'),
+('Практика', 12, 14, NULL, '18-05-2025'),
+('Практика', 3, 26, NULL, '09-06-2025'),
+('Практика', 7, 6, NULL, '27-04-2025'),
+('Практика', 10, 17, NULL, '19-05-2025'),
+('Практика', 13, 28, NULL, '10-06-2025'),
+('Практика', 5, 7, NULL, '28-04-2025'),
+('Практика', 17, 15, NULL, '20-05-2025'),
+('Практика', 15, 21, NULL, '11-06-2025'),
+('Практика', 12, 8, NULL, '29-04-2025'),
+('Практика', 10, 19, NULL, '21-05-2025'),
+('Практика', 18, 28, NULL, '12-06-2025'),
+('Практика', 2, 9, NULL, '30-04-2025'),
+('Практика', 13, 11, NULL, '22-05-2025'),
+('Практика', 10, 30, NULL, '13-06-2025'),
+('Практика', 10, 3, NULL, '01-05-2025'),
+('Практика', 10, 15, NULL, '23-05-2025'),
+('Практика', 19, 26, NULL, '14-06-2025'),
+('Практика', 15, 2, NULL, '02-05-2025'),
+('Практика', 4, 17, NULL, '24-05-2025'),
+('Практика', 16, 29, NULL, '15-06-2025'),
+('Практика', 8, 2, NULL, '03-05-2025'),
+('Практика', 14, 18, NULL, '25-05-2025'),
+('Практика', 9, 28, NULL, '16-06-2025'),
+('Практика', 19, 7, NULL, '04-05-2025'),
+('Практика', 1, 18, NULL, '26-05-2025'),
+('Практика', 20, 30, NULL, '17-06-2025'),
+('Практика', 3, 2, NULL, '05-05-2025'),
+('Практика', 6, 20, NULL, '27-05-2025'),
+('Практика', 7, 22, NULL, '18-06-2025'),
+('Практика', 2, 7, NULL, '06-05-2025'),
+('Практика', 16, 19, NULL, '28-05-2025'),
+('Практика', 8, 23, NULL, '19-06-2025'),
+('Практика', 6, 4, NULL, '07-05-2025'),
+('Практика', 12, 17, NULL, '29-05-2025'),
+('Практика', 13, 28, NULL, '20-06-2025'),
+('Практика', 13, 7, NULL, '08-05-2025'),
+('Практика', 8, 20, NULL, '30-05-2025'),
+('Практика', 10, 28, NULL, '21-06-2025'),
+('Практика', 15, 2, NULL, '09-05-2025'),
+('Практика', 15, 16, NULL, '31-05-2025'),
+('Практика', 19, 30, NULL, '22-06-2025'),
+('Практика', 7, 3, NULL, '10-05-2025'),
+('Практика', 4, 17, NULL, '01-06-2025'),
+('Практика', 11, 22, NULL, '23-06-2025'),
+('Практика', 7, 4, NULL, '11-05-2025'),
+('Практика', 13, 11, NULL, '02-06-2025'),
+('Практика', 13, 23, NULL, '24-06-2025'),
+('Практика', 17, 3, NULL, '12-05-2025'),
+('Практика', 20, 17, NULL, '03-06-2025'),
+('Практика', 11, 29, NULL, '25-06-2025'),
+('Практика', 16, 6, NULL, '13-05-2025'),
+('Практика', 7, 15, NULL, '04-06-2025'),
+('Практика', 17, 30, NULL, '26-06-2025'),
+('Теория', 3, 11, 2, '03-06-2025'),
+('Теория', 3, 12, 2, '03-06-2025'),
+('Теория', 3, 13, 2, '03-06-2025'),
+('Теория', 3, 14, 2, '03-06-2025'),
+('Теория', 3, 15, 2, '03-06-2025'),
+('Теория', 3, 16, 2, '03-06-2025'),
+('Теория', 3, 17, 2, '03-06-2025'),
+('Теория', 3, 18, 2, '03-06-2025'),
+('Теория', 3, 19, 2, '03-06-2025'),
+('Теория', 3, 20, 2, '03-06-2025'),
+('Практика', 17, 3, NULL, '15-05-2025'),
+('Практика', 19, 13, NULL, '06-06-2025'),
+('Практика', 3, 27, NULL, '28-06-2025'),
+('Практика', 9, 6, NULL, '16-05-2025'),
+('Практика', 5, 19, NULL, '07-06-2025'),
+('Практика', 20, 26, NULL, '29-06-2025'),
+('Практика', 8, 10, NULL, '17-05-2025'),
+('Практика', 8, 19, NULL, '08-06-2025'),
+('Практика', 3, 22, NULL, '30-06-2025'),
+('Практика', 2, 4, NULL, '18-05-2025'),
+('Практика', 1, 14, NULL, '09-06-2025'),
+('Практика', 15, 26, NULL, '01-07-2025'),
+('Практика', 20, 6, NULL, '19-05-2025'),
+('Практика', 20, 13, NULL, '10-06-2025'),
+('Практика', 4, 25, NULL, '02-07-2025'),
+('Практика', 2, 4, NULL, '20-05-2025'),
+('Практика', 9, 13, NULL, '11-06-2025'),
+('Практика', 5, 30, NULL, '03-07-2025'),
+('Практика', 12, 6, NULL, '21-05-2025'),
+('Практика', 6, 11, NULL, '12-06-2025'),
+('Практика', 11, 24, NULL, '04-07-2025'),
+('Практика', 8, 6, NULL, '22-05-2025'),
+('Практика', 4, 17, NULL, '13-06-2025'),
+('Практика', 7, 28, NULL, '05-07-2025'),
+('Практика', 6, 1, NULL, '23-05-2025'),
+('Практика', 15, 13, NULL, '14-06-2025'),
+('Практика', 15, 21, NULL, '06-07-2025'),
+('Практика', 12, 3, NULL, '24-05-2025'),
+('Практика', 6, 11, NULL, '15-06-2025'),
+('Практика', 3, 29, NULL, '07-07-2025'),
+('Практика', 18, 8, NULL, '25-05-2025'),
+('Практика', 5, 17, NULL, '16-06-2025'),
+('Практика', 15, 30, NULL, '08-07-2025'),
+('Практика', 20, 3, NULL, '26-05-2025'),
+('Практика', 19, 14, NULL, '17-06-2025'),
+('Практика', 16, 29, NULL, '09-07-2025'),
+('Практика', 16, 4, NULL, '27-05-2025'),
+('Практика', 10, 14, NULL, '18-06-2025'),
+('Практика', 14, 29, NULL, '10-07-2025'),
+('Практика', 16, 9, NULL, '28-05-2025'),
+('Практика', 13, 12, NULL, '19-06-2025'),
+('Практика', 6, 29, NULL, '11-07-2025'),
+('Практика', 13, 6, NULL, '29-05-2025'),
+('Практика', 8, 18, NULL, '20-06-2025'),
+('Практика', 17, 28, NULL, '12-07-2025'),
+('Практика', 10, 7, NULL, '30-05-2025'),
+('Практика', 6, 18, NULL, '21-06-2025'),
+('Практика', 4, 29, NULL, '13-07-2025'),
+('Практика', 8, 9, NULL, '31-05-2025'),
+('Практика', 2, 19, NULL, '22-06-2025'),
+('Практика', 17, 29, NULL, '14-07-2025'),
+('Практика', 10, 10, NULL, '01-06-2025'),
+('Практика', 3, 20, NULL, '23-06-2025'),
+('Практика', 10, 22, NULL, '15-07-2025'),
+('Практика', 4, 6, NULL, '02-06-2025'),
+('Практика', 16, 16, NULL, '24-06-2025'),
+('Практика', 3, 25, NULL, '16-07-2025'),
+('Практика', 1, 6, NULL, '03-06-2025'),
+('Практика', 2, 16, NULL, '25-06-2025'),
+('Практика', 12, 24, NULL, '17-07-2025');
+    """)
+
+def create_role(cursor) -> None:
+    cursor.execute("""
+CREATE ROLE "driving_school_manager" WITH
+	LOGIN
+	CREATEDB
+	CONNECTION LIMIT -1
+	PASSWORD '5up3r_p4ssW0rd';
+
+GRANT USAGE ON SCHEMA public TO "driving_school_manager";
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO "driving_school_manager";
+   
+ALTER SCHEMA public OWNER TO "driving_school_manager";
+""")
