@@ -15,23 +15,14 @@ class DatabaseApp:
 
     def setup_ui(self):
         self.root.title("Broido DB App")       # устанавливаем заголовок окна
-        self.root.geometry("1200x675+200+50")  # устанавливаем размеры окна и свдиг относительно левого верхнего угла экрана
+        self.root.geometry("1200x675+500+100") # устанавливаем размеры окна и свдиг относительно левого верхнего угла экрана
         self.root.update_idletasks()
         self.root.resizable(False, False)
 
         # Создаем главный контейнер для grid
         main_container = tk.Frame(self.root)
         main_container.pack(fill=tk.BOTH, expand=True)
-        
-        # Верхняя панель с кнопками (pack внутри своего фрейма)
-        # top_panel = tk.Frame(main_container)
-        # top_panel.grid(row=0, column=0, columnspan=2, sticky="ew")
-        
-        # tk.Button(top_panel, text="Connect to DB", 
-        #           command=self.show_login_dialog).pack(side=tk.LEFT, padx=5)
-        # tk.Button(top_panel, text="Load data", 
-        #           command=self.load_data).pack(side=tk.LEFT, padx=5)
-        
+                
         # Фрейм для левой части сетки йоу
         left_frame = tk.Frame(main_container)
         left_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
@@ -142,7 +133,7 @@ Error Diag: {e.diag}\n
         # Всплывающее окно для ввода данных подключения
         dialog = tk.Toplevel(self.root)
         dialog.title("Login form")
-        dialog.geometry("400x400")
+        dialog.geometry("400x400+50+100")
         dialog.resizable(False, False)
         
         entries = {}
