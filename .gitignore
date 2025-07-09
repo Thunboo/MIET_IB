@@ -10,7 +10,11 @@
 tempCodeRunnerFile.c
 CppProperties.json
 *.mp4
+<<<<<<< Updated upstream
 History/~$исание и критерии оценивания контрольного мероприятия (рецензия на научную статью).doc
+=======
+*.env
+>>>>>>> Stashed changes
 **/3rd Term/Basics of InfoSec/Laws
 **/3rd Term/OOP (C++)/Examination
 **/3rd Term/English/Article Translation/Book
