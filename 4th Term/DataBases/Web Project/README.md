@@ -1,6 +1,7 @@
 # DB Web App
 ## Как собрать проект
 
+
 1. Скачать `docker-compose.yml`, `requirements.txt` и `webapp.Dockerfile` в одну директорию<br>
 2. Прописать в терминале `docker-compose up -d`<br>
 
