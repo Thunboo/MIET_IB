@@ -1,0 +1,41 @@
+services:
+  db:
+    image: thunboo/custom_postgres:latest    # Points to custom_postgres Dockerfile
+    container_name: db
+    restart: always
+    ports:
+      - 5431:5432 # Optional host exposure
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    environment:
+      POSTGRES_USER: "driving_school_manager"
+      POSTGRES_DB: "driving_school"
+    healthcheck:
+      # test: ["CMD", "pg_isready", "-U", "postgres"] # "$${POSTGRES_USER} -d $${POSTGRES_DB} -t 1"]
+      test: ["CMD", "pg_isready", "-U", "$${POSTGRES_USER}", "-d", "$${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  webapp:
+    container_name: flask-app
+    depends_on:                     # Waits for DB to start
+      db:
+        condition: service_healthy  # OR service_completed_successfully 
+        # restart: true             # Got this in DB section, I think
+    build:                          # Points to flask_app's Dockerfile
+      context: .
+      dockerfile: webapp.Dockerfile 
+    networks:
+      - app-network
+    ports:
+      - "5005:5000"            # Expose Python app port
+
+volumes:
+  pg_data:                     # Named volume for DB persistence
+
+networks:
+  app-network:                 # Dedicated network

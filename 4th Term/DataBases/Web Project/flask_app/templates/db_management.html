@@ -56,7 +56,9 @@
                 <table class="data-table">
                     <thead>
                         <tr>
+                            {% if show_delete %}
                             <th>Action</th>
+                            {% endif %}
                             {% for column in columns %}
                             <th>{{ column }}</th>
                             {% endfor %}

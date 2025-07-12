@@ -1,10 +1,14 @@
 import psycopg2
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
 app.secret_key = 'msk' # for flask.session to work
-params = ['0.0.0.0', 5000, True]
+params = {
+    "host": "0.0.0.0" ,
+    "port": 5000 ,
+    "debug": False
+}
 conn = None
 
 def get_db_connection():
@@ -92,11 +96,11 @@ def delete_row():
             
             # Build WHERE clause only using primary keys
             conditions = []
-            params = []
+            query_params = []
             for key in primary_keys:
                 if key in request.form:
                     conditions.append(f"{key} = %s")
-                    params.append(request.form[key])
+                    query_params.append(request.form[key])
                 else:
                     raise Exception(f"Primary key value missing for {key}")
             
@@ -104,7 +108,7 @@ def delete_row():
             where_clause = " AND ".join(conditions)
             query = f"DELETE FROM {table_name} WHERE {where_clause}"
             
-            cur.execute(query, tuple(params))
+            cur.execute(query, tuple(query_params))
             conn.commit()
             
             # Return to the table data view
