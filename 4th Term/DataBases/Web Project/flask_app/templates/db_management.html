@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Database Management{% endblock %}
+
+{% block content %}
+<h1>PostgreSQL Database Management</h1>
+<div class="container">
+    <div class="db_management_left">
+        <div class="db-section">
+            <h2>Database Tables</h2>
+            <div class="table-list-container">
+                <form id="tableSelectForm" method="POST" action="{{ url_for('show_table_data') }}">
+                    <ul class="table-list">
+                        {% if tables %}
+                            {% for table in tables %}
+                                <li>
+                                    <label class="table-radio">
+                                        <input type="radio" name="table_name" value="{{ table }}">
+                                        {{ table }}
+                                    </label>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="no-tables">No tables found</li>
+                        {% endif %}
+                    </ul>
+                    <div class="table-actions">
+                        <button type="submit" class="show-data-btn db_management_left_button">Show Table Data</button>
+                        <button type="submit" formaction="{{ url_for('list_tables') }}" class="refresh-btn db_management_left_button">
+                            Refresh Tables
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="db_management_right">
+        <div class="db-section">
+            <h2>Run SQL Query</h2>
+            <form method="POST" action="{{ url_for('execute_query') }}">
+                <textarea name="sql_query" rows="5" cols="80" required placeholder="SELECT * FROM table_name;">{{ request.form.sql_query if request.form.sql_query else '' }}</textarea>
+                <br>
+                <input type="submit" value="Execute Query">
+            </form>
+        </div>
+
+        <div class="add-new">
+            ?
+        </div>
+
+        {% if columns and table_data %}
+        <div class="query-results">
+            <h3>Results from {{ selected_table }}:</h3>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            {% if show_delete %}
+                            <th>Action</th>
+                            {% endif %}
+                            {% for column in columns %}
+                            <th>{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in table_data %}
+                        <tr>
+                            {% if show_delete %}
+                            <td>
+                                <form method="POST" action="{{ url_for('delete_row') }}" style="display: inline;">
+                                    <input type="hidden" name="table_name" value="{{ selected_table }}">
+                                    {% for i in range(columns|length) %}
+                                    <input type="hidden" name="{{ columns[i] }}" value="{{ row[i] if row[i] is not none else '' }}">
+                                    {% endfor %}
+                                    <button type="submit" class="delete-btn" title="Delete row">❌</button>
+                                </form>
+                            </td>
+                            {% endif %}
+                            {% for item in row %}
+                            <td>{{ item if item is not none else 'NULL' }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="error-message">
+            <h3>Error:</h3>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+
+        {% if complex_query_warning %}
+        <div class="query-complex-popup">
+            ⚠️ Row deletion disabled for complex queries (contains JOIN/GROUP BY)
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

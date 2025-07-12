@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Login Page{% endblock %}
+
+{% block content %}
+    <div class="login-container">
+        <h1>DB Login</h1>
+        <p>This is the about page of our Flask app.</p>
+
+        <form method="POST" action="{{ url_for('handle_form') }}">
+            <label for="host">host:</label><br>
+            <input type="text" id="host" name="host" value="localhost"><br>
+
+            <label for="port">port:</label><br>
+            <input type="text" id="port" name="port" value="5432"><br>
+
+            <label for="database">database:</label><br>
+            <input type="text" id="database" name="database" required><br>
+
+            <label for="user">user:</label><br>
+            <input type="text" id="user" name="user" required><br>
+
+            <label for="password">password:</label><br>
+            <input type="password" id="password" name="password" required><br>
+
+            <input type="submit" value="Connect">
+        </form>
+    </div>
+{% endblock %}
