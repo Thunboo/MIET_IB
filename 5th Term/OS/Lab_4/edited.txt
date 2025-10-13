@@ -1,0 +1,35 @@
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nolog
+bin:x:2:2:bin:/bin:/usr/sbin/nolog
+sys:x:3:3:sys:/dev:/usr/sbin/nolog
+sync:x:4:65534:sync:/bin:/bin/sync
+g
+man:x:6:12:man:/var/cache/man:/usr/sbin/nolog
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nolog
+mail:x:8:8:mail:/var/mail:/usr/sbin/nolog
+news:x:9:9:news:/var/spool/news:/usr/sbin/nolog
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nolog
+proxy:x:13:13:proxy:/bin:/usr/sbin/nolog
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nolog
+backup:x:34:34:backup:/var/backups:/usr/sbin/nolog
+list:x:38:38:Mailing
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nolog
+g
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nolog
+systemd-timesync:x:100:102:systemd Time Synchronization,,,:/run/systemd:/usr/sbin/nolog
+systemd-network:x:101:103:systemd Network Manag
+systemd-resolve:x:102:104:systemd Resolver,,,:/run/systemd:/usr/sbin/nolog
+_apt:x:103:65534::/nonexistent:/usr/sbin/nolog
+astra-orientation:x:104:110::/var/cache/astra-orientation:/usr/sbin/nolog
+messag
+pulse:x:106:115:PulseAudio daemon,,,:/var/run/pulse:/usr/sbin/nolog
+fly-dm:x:107:118::/var/lib/fly-dm:/usr/sbin/nolog
+sshd:x:108:65534::/run/sshd:/usr/sbin/nolog
+ntp:x:109:121::/nonexistent:/usr/sbin/nolog
+Debian-exim:x:110:122::/var/spool/exim4:/usr/sbin/nolog
+nm-openvpn:x:111:124:NetworkManag
+hplip:x:112:7:HPLIP system user,,,:/run/hplip:/bin/false
+log
+avahi:x:114:126:Avahi mDNS daemon,,,:/var/run/avahi-daemon:/usr/sbin/nolog
+student:x:1000:1000:student,,,:/home/student:/bin/bash
+systemd-coredump:x:999:999:systemd Core Dumper:/:/usr/sbin/nolog
