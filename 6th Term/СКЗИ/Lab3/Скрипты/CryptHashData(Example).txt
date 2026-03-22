@@ -1,0 +1,20 @@
+// Получение публичного ключа (для проверки цифровой подписи)
+HCRYPTKEY hPublicKey;
+
+if(!CryptGetUserKey(hProv, AT_SIGNATURE, &hPublicKey))
+{
+  Error("CryptGetUserKey");
+return;
+}
+
+std::cout<<"Public key is received"<<std::endl;
+
+// Проверка цифровой подписи
+BOOL result = CryptVerifySignature(hHash, (BYTE*)sign_hash, count,
+hPublicKey, NULL, 0);
+
+std::cout<<"Check is completed"<<std::endl;
+
+// Вывод на экран результата проверки цифровой подписи
+std::cout<<"Check result: "
+<< ((result)? "Verified!" :"NOT verified!") <<std::endl;

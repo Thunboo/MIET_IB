@@ -1,0 +1,22 @@
+// Цифровая подпись хеш-значения
+count = 0;
+
+if(!CryptSignHash(hHash, AT_SIGNATURE, NULL, 0, NULL, &count))
+{
+  Error("CryptSignHash");
+return;
+}
+
+char* sign_hash = static_cast<char*>(malloc(count + 1));
+ZeroMemory(sign_hash, count + 1);
+
+if(!CryptSignHash(hHash, AT_SIGNATURE, NULL, 0, (BYTE*)sign_hash, &count))
+{
+  Error("CryptSignHash");
+return;
+}
+
+std::cout<<"Signature created"<<std::endl;
+
+// Вывод на экран значения цифровой подписи
+std::cout<<"Signature value: "<<sign_hash<<std::endl;

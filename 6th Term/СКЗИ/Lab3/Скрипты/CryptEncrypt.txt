@@ -1,0 +1,7 @@
+BOOL CryptEncrypt(HCRYPTKEY hKey, 
+                  HCRYPTHAS hHash, 
+                  BOOL Final, 
+                  DWORD dwFlags, 
+                  BYTE* pbData, 
+DWORD* pdwDataLen, 
+DWORD dwBufLen);

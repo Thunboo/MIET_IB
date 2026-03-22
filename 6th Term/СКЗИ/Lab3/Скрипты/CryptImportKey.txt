@@ -1,0 +1,6 @@
+BOOL CryptImportKey(HCRYPTPROV hProv, 
+                    BYTE* pbData, 
+                    DWORD dwDataLen, 
+                    HCRYPTKEY hPubKey, 
+                    DWORD dwFlags, 
+HCRYPTKEY* phKey);

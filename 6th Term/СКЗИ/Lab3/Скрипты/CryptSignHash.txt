@@ -1,0 +1,6 @@
+BOOL CryptSignHash(HCRYPTHASH hHash, 
+                   DWORD dwKeySpec, 
+                   LPCTSTR sDescription, 
+                   DWORD dwFlags, 
+                   BYTE* pbSignature, 
+DWORD* pdwSigLen);

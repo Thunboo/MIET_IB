@@ -1,0 +1,15 @@
+HCRYPTHASH hHash;
+::CryptCreateHash(hProv,CALG_MD5,0,0,&hHash);
+::CryptHashData(hHash,(BYTE *)&data,dwLen,0);
+BYTE newHash[16];
+dwLen=16;
+::CryptGetHashParam(hHash,HP_HASHVAL,newHash,&dwLen,0);
+if(!memcmp(newHash,oldHash,16))
+{
+//хешверен
+}
+else
+{
+//хешневерен
+}
+::CryptDestroyHash(hHash);

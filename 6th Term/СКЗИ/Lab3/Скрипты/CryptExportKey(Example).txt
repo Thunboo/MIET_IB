@@ -1,0 +1,39 @@
+HCRYPTPROV hProv;
+HCRYPTKEY hKey, hPublicKey, hNewKey;
+
+// Инициализация контекста криптопровайдера (с указанием имени 
+// контейнера ключей)
+if (!CryptAcquireContext(&hProv, "{EB57ED8A-CCCC-4bf5-8659-9DF2F05F24AD}",
+NULL, PROV_RSA_FULL, 0))
+  return;
+
+std::cout<<"Cryptographic provider initialized"<<std::endl;
+
+// Генерация ключа для тестирования
+if (!CryptGenKey(hProv, CALG_RC4, 
+CRYPT_EXPORTABLE | CRYPT_ENCRYPT | CRYPT_DECRYPT, &hKey))
+  return;
+
+std::cout<<"Session key generated"<<std::endl;
+
+// Получение ключа для экспорта ключа шифрования
+if (!CryptGetUserKey(hProv, AT_KEYEXCHANGE, &hPublicKey))
+  return;
+
+std::cout<<"Public key is received"<<std::endl;
+
+count = 0;
+
+// Получение размера массива, используемого для экспорта ключа
+if (!CryptExportKey(hKey, hPublicKey, SIMPLEBLOB, 0, NULL, &count)) 
+return;
+
+// Инициализация массива, используемого для экспорта ключа
+BYTE* data = static_cast<BYTE*>(malloc(count)); 
+ZeroMemory(data, count);
+
+// Экспортключашифрования
+if (!CryptExportKey(hKey, hPublicKey, SIMPLEBLOB, 0, data, &count)) 
+  return;
+
+std::cout<<"Key's export completed"<<std::endl;

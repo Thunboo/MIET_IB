@@ -1,0 +1,5 @@
+BOOL CryptGetHashParam(HCRYPTHASH hHash, 
+                       DWORD dwParam, 
+                       BYTE* pbData, 
+                       DWORD* pdwDataLen, 
+                       DWORD dwFlags);

@@ -1,0 +1,25 @@
+DWORD dwIndex=0;
+DWORD dwType;
+DWORD cbName;
+LPTSTR pszName;
+
+while(CryptEnumProviderTypes(dwIndex,NULL,0,&dwType,NULL,&cbName))
+ {
+if(!cbName)
+break;
+
+if(!(pszName=(LPTSTR)LocalAlloc(LMEM_ZEROINIT, cbName)))
+return;
+
+if(!CryptEnumProviderTypes(dwIndex++,NULL,NULL,&dwType,pszName,&cbName))     
+  {
+   Error("CryptEnumProvidersTypes");
+return;
+  }
+
+std::cout<<"--------------------------------"<<std::endl;
+std::cout<<"Type name: "<<pszName<<std::endl; 
+std::cout<<"Type ID: "<<dwType<<std::endl;
+
+LocalFree(pszName);
+ }

@@ -1,0 +1,5 @@
+BOOL CryptCreateHash(HCRYPTPROV hProv, 
+                     ALG_ID AlgId, 
+                     HCRYPTKEY hKey, 
+                     DWORD dwFlags, 
+                     HCRYPTHASH* phHash);

@@ -1,0 +1,39 @@
+HCRYPTPROV hProv;
+HCRYPTKEY hSessionKey;
+
+// Получение контекста криптопровайдера
+if (!CryptAcquireContext(&hProv, NULL, NULL, 
+PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
+{
+  Error("CryptAcquireContext");
+return;
+}
+
+std::cout<<"Cryptographic provider initialized"<<std::endl;
+
+// Генерация сессионного ключа
+if (!CryptGenKey(hProv, CALG_RC4, 
+CRYPT_ENCRYPT | CRYPT_DECRYPT, &hSessionKey))
+{
+  Error("CryptGenKey");
+return;
+}
+
+std::cout<<"Session key generated"<<std::endl;
+
+// Данные для шифрования
+charstring[]="Test";
+DWORD count=strlen(string);
+
+// Шифрованиеданных
+if (!CryptEncrypt(hSessionKey, 0, true, 0, (BYTE*)string, 
+&count, strlen(string)))
+{
+  Error("CryptEncrypt");
+return;
+}
+
+std::cout<<"Encryption completed"<<std::endl;
+
+// Тестовыйвыводнаэкран
+std::cout<<"Encrypted string: "<< string <<std::endl;

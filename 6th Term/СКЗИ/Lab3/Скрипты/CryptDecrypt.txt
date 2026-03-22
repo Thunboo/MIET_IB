@@ -1,0 +1,6 @@
+BOOL CryptDecrypt(HCRYPTKEY hKey, 
+                  HCRYPTHASH hHash, 
+                  BOOL Final, 
+                  DWORD dwFlags, 
+                  BYTE* pbData, 
+DWORD* pdwDataLen);

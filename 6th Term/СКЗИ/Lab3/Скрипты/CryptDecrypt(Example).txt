@@ -1,0 +1,15 @@
+// Расшифровываниеданных
+if(!CryptDecrypt(hSessionKey, 0, true, 0, (BYTE*)string, &count))
+{
+  Error("CryptDecrypt");
+return;
+}
+
+std::cout<<"Decryption completed" <<std::endl;
+
+// Тестовыйвыводнаэкран
+std::cout<<"Decrypted string: " << string <<std::endl;
+
+// Освобождение контекста локальных переменных
+CryptDestroyKey(hSessionKey); 
+CryptReleaseContext(hProv, 0);

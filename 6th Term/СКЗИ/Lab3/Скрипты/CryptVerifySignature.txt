@@ -1,0 +1,6 @@
+BOOL CryptVerifySignature(HCRYPTHASH hHash, 
+                          BYTE* pbSignature, 
+                          DWORD dwSigLen, 
+                          HCRYPTKEY hPubKey, 
+                          LPCTSTR sDescription, 
+DWORD dwFlags);
