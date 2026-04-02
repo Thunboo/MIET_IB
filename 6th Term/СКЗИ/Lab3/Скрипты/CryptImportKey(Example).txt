@@ -1,5 +1,0 @@
-// Импорт ключа шифрования из полученного массива данных
-if(!CryptImportKey(hProv, data, count, hPublicKey, 0, &hNewKey))
-return;
-
-std::cout<<"Key's import completed" <<std::endl;

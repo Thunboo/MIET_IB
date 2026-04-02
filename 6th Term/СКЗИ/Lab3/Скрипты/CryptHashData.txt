@@ -1,4 +1,0 @@
-BOOL CryptHashData(HCRYPTHASH hHash, 
-                   BYTE* pbData, 
-DWORD dwDataLen, 
-DWORD dwFlags);
